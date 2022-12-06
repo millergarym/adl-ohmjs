@@ -1,52 +1,51 @@
 ADL {
 Module =
-     Annon* module NonemptyListOf<ident,"."> "{" Imports* Top_level_statement* "}" ";" -- module
+     Annon* module scopedName "{" Imports* Decl* "}" ";" -- module
 
-ScopedName = NonemptyListOf<ident,".">
+scopedName = ident ("." ident)*
+scopedNameStar = ident ("." ident)* ".*"
 
 Imports =
-    | import ScopedName ".*;"     -- importModuleName // Todo remove whitespace
-    | import ScopedName ";"      -- importScopedName
+    | import scopedNameStar ";"         -- module
+    | import scopedName ";"             -- scopedName
 
 Annon =
-    | "@" ScopedName JsonValue?                            -- localAnno
-    | doccomment                                      -- docAnno
-//    | a=LINE_DOC                                                          -- docAnno
+    | "@" scopedName JsonValue?                                 -- local
+    | doccomment (doccomment)*                                  -- doc
 
-Top_level_statement =
-    // changed order so `kw {};` is treated as an annotation
-    | annotation ScopedName JsonValue ";"                 -- ModuleAnnotation
-    | annotation ScopedName	 ident  JsonValue ";"                                     -- DeclAnnotation
-    | annotation ident "::" ident ident JsonValue ";"                            -- FieldAnnotation
-    | Annon* (struct|union) ident TypeParam? "{" SoruBody* "}" ";"                 -- StructOrUnion
-    | Annon* (type|newtype) ident TypeParam? "=" TypeExpr ("=" JsonValue)? ";"  -- TypeOrNewtype
-    // | annon* kw=ID a=ID typeParam? "=" typeExpr ";"  -- Type
+Decl =
+    | annotation scopedName JsonValue ";"                                         -- ModuleAnnotation
+    | annotation scopedName     ident  JsonValue ";"                              -- DeclAnnotation
+    | annotation ident "::" ident ident JsonValue ";"                             -- FieldAnnotation
+    | Annon* struct ident MVersion? TypeParam? "{" Fields* "}" ";"                        -- Struct
+    | Annon* union ident MVersion? TypeParam? "{" Fields* "}" ";"                         -- Union
+    | Annon* type ident MVersion? TypeParam? "=" TypeExpr  ";"                              -- Type
+    | Annon* newtype ident MVersion? TypeParam? "=" TypeExpr ("=" JsonValue)? ";"           -- Newtype
+
+MVersion =
+    | "#" digit+                    -- mversion
 
 TypeParam =
-    | "<" ident ("," ident)* ">"                                -- TypeParameter
-//     | "<" typeParamError ("," ID)* ">"                  -- ErrorTypeParam
-//     | "<" ID ("," typeParamError)+ ">"                  -- ErrorTypeParam
-
-// typeParamError
-//     : ID "<" (ID|typeParamError) (COMMA (ID|typeParamError))* ">"
+    | "<" NonemptyListOf<ident, ","> ">"                                        -- TypeParameter
 
 TypeExpr =
-    | ident "<" TypeExpr ("," TypeExpr)* ">"            -- TypeExprGeneric
-    | ident                                                                   -- TypeExprSimple
+    | scopedName "<" NonemptyListOf<TypeExpr, ","> ">"                          -- TypeExprGeneric
+    | scopedName                                                                -- TypeExprSimple
 
-SoruBody =
-    | Annon* TypeExpr ident ("=" JsonValue)? ";"                   -- FieldStatement
+Fields =
+    | Annon* TypeExpr ident ("=" JsonValue)? ";"                                   -- FieldStatement
 
 JsonValue =
-    | string                                                             -- StringStatement
-    | ("true" | "false" | "null")                                                             -- TrueFalseNull
-    | "-"? digit* "." digit+                                                               -- FloatStatement
-    | "-"? digit+                                                               -- NumberStatement
-    | "[" (JsonValue ("," JsonValue)*)? "]"                           -- ArrayStatement
-    | "{" (JsonObj ("," JsonObj)*)? "}"                 -- ObjStatement
+    | string                                                                        -- StringStatement
+    | "true"                                                                        -- true
+    | "false"                                                                       -- false
+    | "null"                                                                        -- null
+    | number                                                                        -- number
+    | "[" ListOf<JsonValue, ","> "]"                                                -- ArrayStatement
+    | "{" ListOf<JsonObj, ","> "}"                                                  -- ObjStatement
 
 JsonObj =
-    | string ":" JsonValue       -- JsonObjStatement
+    | string ":" JsonValue                                                       -- JsonObjStatement
 
 
     module = "module" ~(letter | alnum)
@@ -57,16 +56,14 @@ JsonObj =
     struct = "struct" ~(letter | alnum)
     union = "union" ~(letter | alnum)
 
-    comment =  "//" (~("\n"|"/") any)* "\n"
+    comment =  "//" ~"/" (~("\n") any)* "\n"
     doccomment =  "///" (~"\n" any)* "\n"
     space += comment
 
     string = "\"" (~"\"" ("\\\"" | any))* "\""
     number  (a number)
-      = digit* "." digit+  -- fract
-      | digit+             -- whole
-	ident = letter (alnum| "_")*
-    anchorS = "//"
-    anchorEnd = "\\\\"
+      = "-"? digit* "." digit+  -- fract
+      | "-"? digit+             -- whole
+    ident = letter (alnum| "_")*
 }
 
