@@ -64,10 +64,14 @@ semantics.addOperation<void>("buildTop(decls, annons)", {
 semantics.addOperation<void>("collectDecl(decls)", {
     Decl_Struct(annon, _arg1, name, mversion, typeParam, _arg5, fields, _arg7, _arg8) {
         const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
+
+        const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
+        annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
+
         const decl = AST.makeDecl({
             name: name.sourceString,
             version: { kind: "nothing" },
-            annotations: annon.numChildren !== 0 ? annon.children.map((n: Node) => n.buildAnnotations()) : [],
+            annotations: localAnnons,
             type_: AST.makeDeclType("struct_", AST.makeStruct({
                 typeParams,
                 fields: fields.children.map(f => f.buildField(typeParams))
@@ -77,10 +81,14 @@ semantics.addOperation<void>("collectDecl(decls)", {
     },
     Decl_Union(annon, _arg1, name, mversion, typeParam, _arg5, fields, _arg7, _arg8) {
         const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
+
+        const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
+        annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
+
         const decl = AST.makeDecl({
             name: name.sourceString,
             version: { kind: "nothing" },
-            annotations: annon.numChildren !== 0 ? annon.children.map((n: Node) => n.buildAnnotations()) : [],
+            annotations: localAnnons,
             type_: AST.makeDeclType("union_", AST.makeUnion({
                 typeParams,
                 fields: fields.children.map(f => f.buildField(typeParams))
@@ -99,10 +107,12 @@ semantics.addOperation<string[]>("buildTypeParam", {
 
 semantics.addOperation<AST.Field>("buildField(typeParams)", {
     Fields_FieldStatement(annon, typeExpr, ident, _arg3, jsonValue, _arg5) {
+        const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
+        annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
         return AST.makeField({
             name: ident.sourceString,
             serializedName: ident.sourceString,
-            annotations: annon.children.map((n: Node) => n.buildAnnotations()),
+            annotations: localAnnons,
             default: jsonValue.numChildren !== 0 ? { kind: "just", value: jsonValue.children[0].buildJsonValue() } : { kind: "nothing" },
             typeExpr: typeExpr.buildTypeExpr(this.args.typeParams)
         });
