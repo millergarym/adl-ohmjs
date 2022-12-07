@@ -1,8 +1,9 @@
 ADL {
 Module =
-     Annon* module scopedName "{" Imports* Decl* "}" ";" -- module
+     Annon* module scopedName "{" Imports* Top* "}" ";" -- module
 
-scopedName = ident ("." ident)*
+scopedName = (ident ".")* ident
+// scopedName = ident ("." ident)*
 scopedNameStar = ident ("." ident)* ".*"
 
 Imports =
@@ -13,10 +14,16 @@ Annon =
     | "@" scopedName JsonValue?                                 -- local
     | doccomment (doccomment)*                                  -- doc
 
-Decl =
+Top =
+    | RemoteAnnon   -- annon
+    | Decl          -- decl
+
+RemoteAnnon =
     | annotation scopedName JsonValue ";"                                         -- ModuleAnnotation
     | annotation scopedName     ident  JsonValue ";"                              -- DeclAnnotation
     | annotation ident "::" ident ident JsonValue ";"                             -- FieldAnnotation
+
+Decl =
     | Annon* struct ident MVersion? TypeParam? "{" Fields* "}" ";"                        -- Struct
     | Annon* union ident MVersion? TypeParam? "{" Fields* "}" ";"                         -- Union
     | Annon* type ident MVersion? TypeParam? "=" TypeExpr  ";"                              -- Type

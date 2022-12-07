@@ -14,7 +14,7 @@ import {
 export interface ADLActionDict<T> extends ActionDict<T> {
   Module_module?: (this: NonterminalNode, arg0: IterationNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: TerminalNode, arg4: IterationNode, arg5: IterationNode, arg6: TerminalNode, arg7: TerminalNode) => T;
   Module?: (this: NonterminalNode, arg0: NonterminalNode) => T;
-  scopedName?: (this: NonterminalNode, arg0: NonterminalNode, arg1: IterationNode, arg2: IterationNode) => T;
+  scopedName?: (this: NonterminalNode, arg0: IterationNode, arg1: IterationNode, arg2: NonterminalNode) => T;
   scopedNameStar?: (this: NonterminalNode, arg0: NonterminalNode, arg1: IterationNode, arg2: IterationNode, arg3: TerminalNode) => T;
   Imports_module?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: TerminalNode) => T;
   Imports_scopedName?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: TerminalNode) => T;
@@ -22,9 +22,13 @@ export interface ADLActionDict<T> extends ActionDict<T> {
   Annon_local?: (this: NonterminalNode, arg0: TerminalNode, arg1: NonterminalNode, arg2: IterationNode) => T;
   Annon_doc?: (this: NonterminalNode, arg0: NonterminalNode, arg1: IterationNode) => T;
   Annon?: (this: NonterminalNode, arg0: NonterminalNode) => T;
-  Decl_ModuleAnnotation?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: TerminalNode) => T;
-  Decl_DeclAnnotation?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: NonterminalNode, arg4: TerminalNode) => T;
-  Decl_FieldAnnotation?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: TerminalNode, arg3: NonterminalNode, arg4: NonterminalNode, arg5: NonterminalNode, arg6: TerminalNode) => T;
+  Top_annon?: (this: NonterminalNode, arg0: NonterminalNode) => T;
+  Top_decl?: (this: NonterminalNode, arg0: NonterminalNode) => T;
+  Top?: (this: NonterminalNode, arg0: NonterminalNode) => T;
+  RemoteAnnon_ModuleAnnotation?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: TerminalNode) => T;
+  RemoteAnnon_DeclAnnotation?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: NonterminalNode, arg4: TerminalNode) => T;
+  RemoteAnnon_FieldAnnotation?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: TerminalNode, arg3: NonterminalNode, arg4: NonterminalNode, arg5: NonterminalNode, arg6: TerminalNode) => T;
+  RemoteAnnon?: (this: NonterminalNode, arg0: NonterminalNode) => T;
   Decl_Struct?: (this: NonterminalNode, arg0: IterationNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: IterationNode, arg4: IterationNode, arg5: TerminalNode, arg6: IterationNode, arg7: TerminalNode, arg8: TerminalNode) => T;
   Decl_Union?: (this: NonterminalNode, arg0: IterationNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: IterationNode, arg4: IterationNode, arg5: TerminalNode, arg6: IterationNode, arg7: TerminalNode, arg8: TerminalNode) => T;
   Decl_Type?: (this: NonterminalNode, arg0: IterationNode, arg1: NonterminalNode, arg2: NonterminalNode, arg3: IterationNode, arg4: IterationNode, arg5: TerminalNode, arg6: NonterminalNode, arg7: TerminalNode) => T;

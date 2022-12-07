@@ -1,8 +1,22 @@
 import test from 'ava';
 import fs from 'fs';
 
+import { makeAST, match } from './adl';
 import grammar, { ADLSemantics } from './adl.ohm-bundle';
 
+
+test("ast", t => {
+  t.is(JSON.stringify(makeAST(match("module X {};"))), '{"name":"X","imports":[],"decls":{},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module a.b.c.d {};"))), '{"name":"a.b.c.d","imports":[],"decls":{},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {import a.b.c;};"))), '{"name":"X","imports":[{"kind":"scopedName","value":{"moduleName":"a.b","name":"c"}}],"decls":{},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {import a.b.*;};"))), '{"name":"X","imports":[{"kind":"moduleName","value":"a.b"}],"decls":{},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {import a.b; import c.d;};"))), '{"name":"X","imports":[{"kind":"scopedName","value":{"moduleName":"a","name":"b"}},{"kind":"scopedName","value":{"moduleName":"c","name":"d"}}],"decls":{},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {import a;};"))), '{"name":"X","imports":[{"kind":"scopedName","value":{"moduleName":"","name":"a"}}],"decls":{},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {struct A{};};"))), '{"name":"X","imports":[],"decls":{"A":{"name":"A","version":{"kind":"nothing"},"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[]}},"annotations":[]}},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {struct A<T,U>{};};"))), '{"name":"X","imports":[],"decls":{"A":{"name":"A","version":{"kind":"nothing"},"type_":{"kind":"struct_","value":{"typeParams":["T","U"],"fields":[]}},"annotations":[]}},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {struct A{String B;};};"))), '{"name":"X","imports":[],"decls":{"A":{"name":"A","version":{"kind":"nothing"},"type_":{"kind":"struct_","value":{"typeParams":[],"fields":[{"name":"B","serializedName":"B","typeExpr":{"typeRef":{"kind":"primitive","value":"String"},"parameters":[]},"default":{"kind":"nothing"},"annotations":[]}]}},"annotations":[]}},"annotations":[]}')
+  t.is(JSON.stringify(makeAST(match("module X {struct A<T>{Vector<T> B;};};"))), '{"name":"X","imports":[],"decls":{"A":{"name":"A","version":{"kind":"nothing"},"type_":{"kind":"struct_","value":{"typeParams":["T"],"fields":[{"name":"B","serializedName":"B","typeExpr":{"typeRef":{"kind":"primitive","value":"Vector"},"parameters":[{"typeRef":{"kind":"typeParam","value":"T"},"parameters":[]}]},"default":{"kind":"nothing"},"annotations":[]}]}},"annotations":[]}},"annotations":[]}')
+})
 
 test("match", t => {
   console.log("pwd", process.cwd());
