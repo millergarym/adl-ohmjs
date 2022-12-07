@@ -24,10 +24,10 @@ RemoteAnnon =
     | annotation ident "::" ident ident JsonValue ";"                               -- FieldAnnotation
 
 Decl =
-    | Annon* struct ident MVersion? TypeParam? "{" Fields* "}" ";"                        -- Struct
-    | Annon* union ident MVersion? TypeParam? "{" Fields* "}" ";"                         -- Union
-    | Annon* type ident MVersion? TypeParam? "=" TypeExpr  ";"                              -- Type
-    | Annon* newtype ident MVersion? TypeParam? "=" TypeExpr ("=" JsonValue)? ";"           -- Newtype
+    | Annon* struct     ident MVersion? TypeParam? "{" Fields* "}" ";"                        -- Struct
+    | Annon* union      ident MVersion? TypeParam? "{" Fields* "}" ";"                         -- Union
+    | Annon* type       ident MVersion? TypeParam? "=" TypeExpr  ";"                              -- Type
+    | Annon* newtype    ident MVersion? TypeParam? "=" TypeExpr ("=" JsonValue)? ";"           -- Newtype
 
 MVersion =
     | "#" digit+                    -- mversion

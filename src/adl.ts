@@ -48,9 +48,21 @@ semantics.addOperation<void>("collectAnnotations(annon)", {
         }));
     },
     Annon_doc(dc1, dc2) {
-
+        // TODO
     },
 });
+
+semantics.addOperation<void>("collectRemoteAnnon(annon)", {
+    RemoteAnnon_ModuleAnnotation(_arg0, sn, jv, _arg3) {
+        // TODO
+    },
+    RemoteAnnon_DeclAnnotation(_arg0, sn, declName, jv, _arg4) {
+        // TODO
+    },
+    RemoteAnnon_FieldAnnotation(_arg0, declName, _arg2, arg3, arg4, jv, _arg6) {
+        // TODO
+    },
+})
 
 semantics.addOperation<void>("buildTop(decls, annons)", {
     Top_annon(arg0) {
@@ -70,7 +82,7 @@ semantics.addOperation<void>("collectDecl(decls)", {
 
         const decl = AST.makeDecl({
             name: name.sourceString,
-            version: { kind: "nothing" },
+            version: { kind: "nothing" }, // TODO
             annotations: localAnnons,
             type_: AST.makeDeclType("struct_", AST.makeStruct({
                 typeParams,
@@ -87,11 +99,46 @@ semantics.addOperation<void>("collectDecl(decls)", {
 
         const decl = AST.makeDecl({
             name: name.sourceString,
-            version: { kind: "nothing" },
+            version: { kind: "nothing" }, // TODO
             annotations: localAnnons,
             type_: AST.makeDeclType("union_", AST.makeUnion({
                 typeParams,
                 fields: fields.children.map(f => f.buildField(typeParams))
+            }))
+        });
+        this.args.decls[name.sourceString] = decl;
+    },
+    Decl_Type(annon, _arg1, name, mversion, typeParam, _arg5, typeExpr, _arg7) {
+        const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
+        annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
+
+        const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
+
+        const decl = AST.makeDecl({
+            name: name.sourceString,
+            version: { kind: "nothing" }, // TODO
+            annotations: localAnnons,
+            type_: AST.makeDeclType("type_", AST.makeTypeDef({
+                typeParams,
+                typeExpr: typeExpr.buildTypeExpr(typeParams)
+            }))
+        });
+        this.args.decls[name.sourceString] = decl;
+    },
+    Decl_Newtype(annon, _arg1, name, mversion, typeParam, _arg5, typeExpr, _arg7, jsonValue, arg9) {
+        const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
+        annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
+
+        const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
+
+        const decl = AST.makeDecl({
+            name: name.sourceString,
+            version: { kind: "nothing" }, // TODO
+            annotations: localAnnons,
+            type_: AST.makeDeclType("newtype_", AST.makeNewType({
+                typeParams,
+                typeExpr: typeExpr.buildTypeExpr(typeParams),
+                default: jsonValue.numChildren !== 0 ? { kind: "just", value: jsonValue.children[0].buildJsonValue() } : { kind: "nothing" },
             }))
         });
         this.args.decls[name.sourceString] = decl;
