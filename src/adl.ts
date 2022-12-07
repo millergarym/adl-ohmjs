@@ -10,6 +10,7 @@ import {
 } from 'ohm-js';
 import grammar, { ADLSemantics } from './adl.ohm-bundle';
 import * as AST from './adl/runtime/sys/adlast';
+import * as TS from './adl/runtime/sys/types';
 
 const semantics: ADLSemantics = grammar.createSemantics();
 
@@ -26,14 +27,28 @@ semantics.addOperation<AST.Module>("buildModule", {
     Module_module(annon, _arg1, name, _arg3, imports, top, _arg6, _arg7) {
         const decls: { [key: string]: AST.Decl; } = {};
         const annons: RemoteAnnonation[] = [];
+        const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
+        annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
         top.children.forEach(t => t.buildTop(decls, annons));
         return AST.makeModule({
             name: name.sourceString,
             imports: imports.numChildren !== 0 ? imports.children.map((n: Node) => n.buildImports()) : [],
             decls,
             // decls: decl.numChildren !== 0 ? decl.buildDecls() : {}, // TODO
-            annotations: annon.numChildren !== 0 ? annon.children.map((n: Node) => n.buildAnnotations()) : [],
+            annotations: localAnnons,
         });
+    },
+});
+
+semantics.addOperation<void>("collectAnnotations(annon)", {
+    Annon_local(_arg0, sn, jv) {
+        this.args.annon.push(TS.makeMapEntry<AST.ScopedName, {} | null>({
+            key: sn.buildScopedName(),
+            value: jv.numChildren !== 0 ? jv.children[0].buildJsonValue() : null,
+        }));
+    },
+    Annon_doc(dc1, dc2) {
+
     },
 });
 
@@ -48,12 +63,25 @@ semantics.addOperation<void>("buildTop(decls, annons)", {
 
 semantics.addOperation<void>("collectDecl(decls)", {
     Decl_Struct(annon, _arg1, name, mversion, typeParam, _arg5, fields, _arg7, _arg8) {
-        const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : []
+        const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
         const decl = AST.makeDecl({
             name: name.sourceString,
             version: { kind: "nothing" },
             annotations: annon.numChildren !== 0 ? annon.children.map((n: Node) => n.buildAnnotations()) : [],
             type_: AST.makeDeclType("struct_", AST.makeStruct({
+                typeParams,
+                fields: fields.children.map(f => f.buildField(typeParams))
+            }))
+        });
+        this.args.decls[name.sourceString] = decl;
+    },
+    Decl_Union(annon, _arg1, name, mversion, typeParam, _arg5, fields, _arg7, _arg8) {
+        const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
+        const decl = AST.makeDecl({
+            name: name.sourceString,
+            version: { kind: "nothing" },
+            annotations: annon.numChildren !== 0 ? annon.children.map((n: Node) => n.buildAnnotations()) : [],
+            type_: AST.makeDeclType("union_", AST.makeUnion({
                 typeParams,
                 fields: fields.children.map(f => f.buildField(typeParams))
             }))
@@ -75,9 +103,41 @@ semantics.addOperation<AST.Field>("buildField(typeParams)", {
             name: ident.sourceString,
             serializedName: ident.sourceString,
             annotations: annon.children.map((n: Node) => n.buildAnnotations()),
-            default: { kind: "nothing" },
+            default: jsonValue.numChildren !== 0 ? { kind: "just", value: jsonValue.children[0].buildJsonValue() } : { kind: "nothing" },
             typeExpr: typeExpr.buildTypeExpr(this.args.typeParams)
         });
+    },
+});
+
+semantics.addOperation<{} | null>("buildJsonValue", {
+    JsonValue_StringStatement(str) {
+        return str.sourceString;
+    },
+    JsonValue_true(_arg0) {
+        return true;
+    },
+    JsonValue_false(_arg0) {
+        return false;
+    },
+    JsonValue_null(_arg0) {
+        return null;
+    },
+    JsonValue_number(num) {
+        return Number(num.sourceString);
+    },
+    JsonValue_ArrayStatement(_arg0, list, _arg2) {
+        return list.asIteration().children.map((e: Node) => e.buildJsonValue());
+    },
+    JsonValue_ObjStatement(_arg0, jobj, _arg2) {
+        const obj = {};
+        jobj.asIteration().children.forEach((e: Node) => e.collectJsonObj(obj));
+        return obj;
+    },
+});
+
+semantics.addOperation<void>("collectJsonObj(obj)", {
+    JsonObj_JsonObjStatement(k, _arg1, v) {
+        this.args.obj[k.sourceString] = v.buildJsonValue();
     },
 });
 
@@ -164,4 +224,5 @@ const genericPrimitive = [
     "Vector",
     "StringMap",
     "Nullable",
+    "TypeToken",
 ];

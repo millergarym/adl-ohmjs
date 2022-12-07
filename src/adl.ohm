@@ -19,9 +19,9 @@ Top =
     | Decl          -- decl
 
 RemoteAnnon =
-    | annotation scopedName JsonValue ";"                                         -- ModuleAnnotation
-    | annotation scopedName     ident  JsonValue ";"                              -- DeclAnnotation
-    | annotation ident "::" ident ident JsonValue ";"                             -- FieldAnnotation
+    | annotation scopedName JsonValue ";"                                           -- ModuleAnnotation
+    | annotation scopedName ident  JsonValue ";"                                    -- DeclAnnotation
+    | annotation ident "::" ident ident JsonValue ";"                               -- FieldAnnotation
 
 Decl =
     | Annon* struct ident MVersion? TypeParam? "{" Fields* "}" ";"                        -- Struct
