@@ -1,0 +1,79 @@
+import ohm from "ohm-js";
+
+export const grammar = ohm.grammar(String.raw`
+ADL {
+    Module =
+         Annon* module scopedName "{" Imports* Top* "}" ";" -- module
+    
+    scopedName = (ident ".")* ident
+    // scopedName = ident ("." ident)*
+    scopedNameStar = ident ("." ident)* ".*"
+    
+    Imports =
+        | import scopedNameStar ";"         -- module
+        | import scopedName ";"             -- scopedName
+    
+    Annon =
+        | "@" scopedName JsonValue?                                 -- local
+        | doccomment (doccomment)*                                  -- doc
+    
+    Top =
+        | RemoteAnnon   -- annon
+        | Decl          -- decl
+    
+    RemoteAnnon =
+        | annotation scopedName JsonValue ";"                                           -- ModuleAnnotation
+        | annotation scopedName ident  JsonValue ";"                                    -- DeclAnnotation
+        | annotation ident "::" ident ident JsonValue ";"                               -- FieldAnnotation
+    
+    Decl =
+        | Annon* struct     ident MVersion? TypeParam? "{" Fields* "}" ";"                        -- Struct
+        | Annon* union      ident MVersion? TypeParam? "{" Fields* "}" ";"                         -- Union
+        | Annon* type       ident MVersion? TypeParam? "=" TypeExpr  ";"                              -- Type
+        | Annon* newtype    ident MVersion? TypeParam? "=" TypeExpr ("=" JsonValue)? ";"           -- Newtype
+    
+    MVersion =
+        | "#" digit+                    -- mversion
+    
+    TypeParam =
+        | "<" NonemptyListOf<ident, ","> ">"                                        -- TypeParameter
+    
+    TypeExpr =
+        | scopedName "<" NonemptyListOf<TypeExpr, ","> ">"                          -- TypeExprGeneric
+        | scopedName                                                                -- TypeExprSimple
+    
+    Fields =
+        | Annon* TypeExpr ident ("=" JsonValue)? ";"                                   -- FieldStatement
+    
+    JsonValue =
+        | string                                                                        -- StringStatement
+        | "true"                                                                        -- true
+        | "false"                                                                       -- false
+        | "null"                                                                        -- null
+        | number                                                                        -- number
+        | "[" ListOf<JsonValue, ","> "]"                                                -- ArrayStatement
+        | "{" ListOf<JsonObj, ","> "}"                                                  -- ObjStatement
+    
+    JsonObj =
+        | string ":" JsonValue                                                       -- JsonObjStatement
+    
+    
+        module = "module" ~(letter | alnum)
+        import = "import" ~(letter | alnum)
+        annotation = "annotation" ~(letter | alnum)
+        type = "type" ~(letter | alnum)
+        newtype = "newtype" ~(letter | alnum)
+        struct = "struct" ~(letter | alnum)
+        union = "union" ~(letter | alnum)
+    
+        comment =  "//" ~"/" (~("\n") any)* "\n"
+        doccomment =  "///" (~"\n" any)* "\n"
+        space += comment
+    
+        string = "\"" (~"\"" ("\\\"" | any))* "\""
+        number  (a number)
+          = "-"? digit* "." digit+  -- fract
+          | "-"? digit+             -- whole
+        ident = letter (alnum| "_")*
+    }
+`)

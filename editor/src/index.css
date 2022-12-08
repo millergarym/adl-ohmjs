@@ -1,0 +1,17 @@
+.EditorView {
+    display: flex;
+    flex-direction: row;
+}
+
+.Editor {
+	width: 400px;
+	height: 600px;
+	border: 1px solid #ccc;
+}
+
+.Output {
+	margin: 0px;
+	width: 400px;
+	height: 600px;
+	border: 1px solid #ccc;
+}
