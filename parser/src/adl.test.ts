@@ -25,10 +25,11 @@ test("ast", t => {
 
 });
 
+const dir = "../.."
 const files = [
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test1/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test1/input/test.adl"
   },
   {
     "valid": false,
@@ -36,239 +37,239 @@ const files = [
   },
   {
     "valid": true,
-    "file": "../adl/typescript/tests/example.adl"
+    "file": dir + "/adl/typescript/tests/example.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test16/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test16/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test16/input/test2.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test16/input/test2.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test29/input/test29.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test29/input/test29.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test11/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test11/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test27/input/test27.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test27/input/test27.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test27/input/test27a.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test27/input/test27a.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test18/input/test.adl-rs"
+    "file": dir + "/adl/haskell/compiler/tests/test18/input/test.adl-rs"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test18/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test18/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test20/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test20/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test21/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test21/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test26/input/test26.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test26/input/test26.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test19/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test19/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test10/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test10/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test17/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test17/input/test.adl"
   },
   {
     "valid": false,
-    "file": "../adl/haskell/compiler/tests/test28/input/test28.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test28/input/test28.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test9/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test9/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test7/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test7/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test6/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test6/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test1/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test1/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test8/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test8/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test12/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test12/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test15/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test15/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test23/input/test23.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test23/input/test23.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test24/input/test24.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test24/input/test24.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test25/input/admin.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test25/input/admin.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test22/input/test22b.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test22/input/test22b.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test22/input/test22a.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test22/input/test22a.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test14/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test14/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test13/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test13/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test4/input/test.adl-cpp"
+    "file": dir + "/adl/haskell/compiler/tests/test4/input/test.adl-cpp"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test4/input/test.adl-rs"
+    "file": dir + "/adl/haskell/compiler/tests/test4/input/test.adl-rs"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test4/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test4/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test4/input/test.adl-java"
+    "file": dir + "/adl/haskell/compiler/tests/test4/input/test.adl-java"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test4/input/test.adl-hs"
+    "file": dir + "/adl/haskell/compiler/tests/test4/input/test.adl-hs"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test3/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test3/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test2/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test2/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test2/input/test.adl-hs"
+    "file": dir + "/adl/haskell/compiler/tests/test2/input/test.adl-hs"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test5/input/test.adl-rs"
+    "file": dir + "/adl/haskell/compiler/tests/test5/input/test.adl-rs"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test5/input/test.adl"
+    "file": dir + "/adl/haskell/compiler/tests/test5/input/test.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/test5/input/test.adl-hs"
+    "file": dir + "/adl/haskell/compiler/tests/test5/input/test.adl-hs"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/demo1/input/picture.adl"
+    "file": dir + "/adl/haskell/compiler/tests/demo1/input/picture.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/tests/demo1/input/picture.adl-rs"
+    "file": dir + "/adl/haskell/compiler/tests/demo1/input/picture.adl-rs"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/lib/adl/adlc/config/typescript.adl"
+    "file": dir + "/adl/haskell/compiler/lib/adl/adlc/config/typescript.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/lib/adl/adlc/config/haskell.adl"
+    "file": dir + "/adl/haskell/compiler/lib/adl/adlc/config/haskell.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/lib/adl/adlc/config/rust.adl"
+    "file": dir + "/adl/haskell/compiler/lib/adl/adlc/config/rust.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/lib/adl/adlc/config/java.adl"
+    "file": dir + "/adl/haskell/compiler/lib/adl/adlc/config/java.adl"
   },
   {
     "valid": true,
-    "file": "../adl/haskell/compiler/lib/adl/adlc/config/cpp.adl"
+    "file": dir + "/adl/haskell/compiler/lib/adl/adlc/config/cpp.adl"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/types.adl-rs"
+    "file": dir + "/adl/adl/stdlib/sys/types.adl-rs"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/types.adl"
+    "file": dir + "/adl/adl/stdlib/sys/types.adl"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/types.adl-cpp"
+    "file": dir + "/adl/adl/stdlib/sys/types.adl-cpp"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/dynamic.adl"
+    "file": dir + "/adl/adl/stdlib/sys/dynamic.adl"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/adlast.adl-java"
+    "file": dir + "/adl/adl/stdlib/sys/adlast.adl-java"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/dynamic.adl-java"
+    "file": dir + "/adl/adl/stdlib/sys/dynamic.adl-java"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/adlast.adl"
+    "file": dir + "/adl/adl/stdlib/sys/adlast.adl"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/annotations.adl"
+    "file": dir + "/adl/adl/stdlib/sys/annotations.adl"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/types.adl-java"
+    "file": dir + "/adl/adl/stdlib/sys/types.adl-java"
   },
   {
     "valid": true,
-    "file": "../adl/adl/stdlib/sys/types.adl-hs"
+    "file": dir + "/adl/adl/stdlib/sys/types.adl-hs"
   },
   {
     "valid": true,
-    "file": "../adl/cpp/runtime/src-generated/unittests.adl"
+    "file": dir + "/adl/cpp/runtime/src-generated/unittests.adl"
   }
 ];
 
