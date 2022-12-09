@@ -41,16 +41,32 @@ export const Editor = () => {
 		model.onDidChangeContent((e: monaco.editor.IModelContentChangedEvent) => {
 			const m = match(model.getValue());
 			// console.log("onDidChangeContent", e, model.getValue(), m.failed());
-			if ( m.failed() ) {
-				console.log( "syntax error - message : ", m.message );
-				console.log( "syntax error - short message : ", m.shortMessage );
-				const errorRE = /Line (\d*), col (\d*): expected (.*)/
-				const er = errorRE.exec(m.shortMessage ? m.shortMessage : "")
-				if( er !== null ) {
-					const line = Number(er[1])
-					const col = Number(er[2])
-					const msg = er[3]
-					monaco.editor.setModelMarkers(model, "asdf", [
+			if (m.failed()) {
+				console.log("syntax error - message : ", m.message);
+				console.log("syntax error - short message : ", m.shortMessage);
+				const errorRE = /Line (\d*), col (\d*): expected (.*)/;
+				const er = errorRE.exec(m.shortMessage ? m.shortMessage : "");
+				if (er !== null) {
+					const line = Number(er[1]);
+					const col = Number(er[2]);
+					const msg = er[3];
+					// model.deltaDecorations(
+					// 	[],
+					// 	[
+					// 		{
+					// 			range: new monaco.Range(line, col, line, col),
+					// 			options: {
+					// 				isWholeLine: true,
+					// 				linesDecorationsClassName: 'myLineDecoration',
+					// 				glyphMarginHoverMessage: {
+					// 					value: msg,
+					// 				}
+					// 			}
+					// 		}
+					// 	]
+					// );
+
+					monaco.editor.setModelMarkers(model, "", [
 						{
 							severity: 8,
 							message: msg,
@@ -59,13 +75,35 @@ export const Editor = () => {
 							endLineNumber: line,
 							endColumn: col,
 						}
-					])
+					]);
 				}
 			}
 			if (m.succeeded()) {
-				monaco.editor.setModelMarkers(model, "asdf", [])
-				const module = makeAST(m);
-				setAstJsonStr(JSON.stringify(module, null, 4));
+				monaco.editor.setModelMarkers(model, "", []);
+				const { ast, errors } = makeAST(m);
+				monaco.editor.setModelMarkers(model, "", errors.map(e => {
+					// console.log("!!", e.source.getLineAndColumnMessage());
+					// console.log("!!!", e.source.collapsedRight().getLineAndColumnMessage());
+					const msg = e.source.getLineAndColumnMessage();
+					const errorRE = /Line (\d*), col (\d*):/;
+					const er = errorRE.exec(msg);
+					const startLineNumber = er ? Number(er[1]) : 1
+					const startColumn = er ? Number(er[2]) : 1
+
+					const er2 = errorRE.exec(e.source.collapsedRight().getLineAndColumnMessage());
+					const endLineNumber = er2 ? Number(er2[1]) : 1
+					const endColumn = er2 ? Number(er2[2]) : 1
+
+					return {
+						severity: 8,
+						message: e.message,
+						startLineNumber,
+						startColumn,
+						endLineNumber,
+						endColumn,
+					};
+				}));
+				setAstJsonStr(JSON.stringify(ast, null, 4));
 			}
 		});
 
