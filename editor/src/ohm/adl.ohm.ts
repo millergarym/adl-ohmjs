@@ -23,8 +23,8 @@ ADL {
     
     RemoteAnnon =
         | annotation scopedName JsonValue ";"                                           -- ModuleAnnotation
-        | annotation scopedName ident  JsonValue ";"                                    -- DeclAnnotation
-        | annotation ident "::" ident ident JsonValue ";"                               -- FieldAnnotation
+        | annotation ident scopedName JsonValue ";"                                    -- DeclAnnotation
+        | annotation ident "::" ident scopedName JsonValue ";"                               -- FieldAnnotation
     
     Decl =
         | Annon* struct     ident MVersion? TypeParam? "{" Fields* "}" ";"                        -- Struct
