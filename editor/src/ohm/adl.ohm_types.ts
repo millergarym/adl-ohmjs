@@ -20,7 +20,7 @@ export interface ADLActionDict<T> extends ActionDict<T> {
   Imports_scopedName?: (this: NonterminalNode, arg0: NonterminalNode, arg1: NonterminalNode, arg2: TerminalNode) => T;
   Imports?: (this: NonterminalNode, arg0: NonterminalNode) => T;
   Annon_local?: (this: NonterminalNode, arg0: TerminalNode, arg1: NonterminalNode, arg2: IterationNode) => T;
-  Annon_doc?: (this: NonterminalNode, arg0: NonterminalNode, arg1: IterationNode) => T;
+  Annon_doc?: (this: NonterminalNode, arg0: IterationNode) => T;
   Annon?: (this: NonterminalNode, arg0: NonterminalNode) => T;
   Top_annon?: (this: NonterminalNode, arg0: NonterminalNode) => T;
   Top_decl?: (this: NonterminalNode, arg0: NonterminalNode) => T;

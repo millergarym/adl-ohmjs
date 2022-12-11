@@ -20,9 +20,16 @@ interface SemanticErrors<T> {
 }
 
 interface SemanticError {
-    source: ohm.Interval
+    source: ohm.Interval;
     message: string;
 }
+
+interface KV {
+    key: string;
+    val: {} | null;
+}
+
+type SnV = TS.MapEntry<AST.ScopedName, {} | null>;
 
 type Result<T> = SemanticErrors<T> | { kind: "just"; value: T; };
 
@@ -35,7 +42,7 @@ export function match(adlStr: string): MatchResult {
     return grammar.match(adlStr);
 }
 
-export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticError[]} {
+export function makeAST(adl: MatchResult): { ast: AST.Module; errors: SemanticError[]; } {
     const semantics: ADLSemantics = grammar.createSemantics();
     const errors: SemanticError[] = [];
 
@@ -43,28 +50,40 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
         Module_module(annon, _arg1, name, _arg3, imports, top, _arg6, _arg7) {
             const decls: { [key: string]: AST.Decl; } = {};
             const annons: RemoteAnnonation[] = [];
-            const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
-            annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
             top.children.forEach(t => t.buildTop(decls, annons));
             return AST.makeModule({
+                annotations: annon.children.map(a => a.buildAnnotations()),
                 name: name.sourceString,
                 imports: imports.numChildren !== 0 ? imports.children.map((n: Node) => n.buildImports()) : [],
                 decls,
                 // decls: decl.numChildren !== 0 ? decl.buildDecls() : {}, // TODO
-                annotations: localAnnons,
             });
         },
     });
 
-    semantics.addOperation<void>("collectAnnotations(annon)", {
+    semantics.addOperation<SnV>("buildAnnotations", {
         Annon_local(_arg0, sn, jv) {
-            this.args.annon.push(TS.makeMapEntry<AST.ScopedName, {} | null>({
+            return TS.makeMapEntry<AST.ScopedName, {} | null>({
                 key: sn.buildScopedName(),
                 value: jv.numChildren !== 0 ? jv.children[0].buildJsonValue() : null,
-            }));
+            });
         },
-        Annon_doc(dc1, dc2) {
-            // TODO
+        Annon_doc(dc1) {
+            let firstHasSpace = false;
+            return TS.makeMapEntry<AST.ScopedName, {} | null>({
+                key: AST.makeScopedName({
+                    moduleName: "",
+                    name: "Doc",
+                }),
+                value: dc1.children.map((dc, i) => {
+                    const s1 = dc.sourceString.substring(3);
+                    if ((i === 0 || firstHasSpace) && s1.startsWith(" ")) {
+                        firstHasSpace = true;
+                        return s1.substring(1, s1.length - 1);
+                    }
+                    return s1.substring(0, s1.length - 1);
+                }).join("\n"),
+            });
         },
     });
 
@@ -93,13 +112,10 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
         Decl_Struct(annon, _arg1, name, mversion, typeParam, _arg5, fields, _arg7, _arg8) {
             const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
 
-            const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
-            annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
-
             const decl = AST.makeDecl({
                 name: name.sourceString,
                 version: { kind: "nothing" }, // TODO
-                annotations: localAnnons,
+                annotations: annon.children.map(a => a.buildAnnotations()),
                 type_: AST.makeDeclType("struct_", AST.makeStruct({
                     typeParams: typeParams,
                     fields: fields.children.map(f => f.buildField(typeParams))
@@ -110,13 +126,10 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
         Decl_Union(annon, _arg1, name, mversion, typeParam, _arg5, fields, _arg7, _arg8) {
             const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
 
-            const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
-            annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
-
             const decl = AST.makeDecl({
                 name: name.sourceString,
                 version: { kind: "nothing" }, // TODO
-                annotations: localAnnons,
+                annotations: annon.children.map(a => a.buildAnnotations()),
                 type_: AST.makeDeclType("union_", AST.makeUnion({
                     typeParams,
                     fields: fields.children.map(f => f.buildField(typeParams))
@@ -125,15 +138,12 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
             this.args.decls[name.sourceString] = decl;
         },
         Decl_Type(annon, _arg1, name, mversion, typeParam, _arg5, typeExpr, _arg7) {
-            const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
-            annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
-
             const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
 
             const decl = AST.makeDecl({
                 name: name.sourceString,
                 version: { kind: "nothing" }, // TODO
-                annotations: localAnnons,
+                annotations: annon.children.map(a => a.buildAnnotations()),
                 type_: AST.makeDeclType("type_", AST.makeTypeDef({
                     typeParams,
                     typeExpr: typeExpr.buildTypeExpr(typeParams)
@@ -142,15 +152,12 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
             this.args.decls[name.sourceString] = decl;
         },
         Decl_Newtype(annon, _arg1, name, mversion, typeParam, _arg5, typeExpr, _arg7, jsonValue, arg9) {
-            const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
-            annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
-
             const typeParams: string[] = typeParam.numChildren !== 0 ? typeParam.children[0].buildTypeParam() : [];
 
             const decl = AST.makeDecl({
                 name: name.sourceString,
                 version: { kind: "nothing" }, // TODO
-                annotations: localAnnons,
+                annotations: annon.children.map(a => a.buildAnnotations()),
                 type_: AST.makeDeclType("newtype_", AST.makeNewType({
                     typeParams,
                     typeExpr: typeExpr.buildTypeExpr(typeParams),
@@ -165,14 +172,9 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
         TypeParam_TypeParameter(_arg0, list, _arg2) {
             const result = list.asIteration().children.map((t: Node) => {
                 if (simplePrimitive.includes(t.sourceString)) {
-                    console.log("!!", t.source.getLineAndColumnMessage() )
-                    console.log("!!", t.source )
                     errors.push({
                         source: t.source,
-                        // startIdx: t.source.startIdx,
-                        // endIdx: t.source.endIdx,
-                        // contents: t.source.contents,
-                        message: "Type Param can't be a primitive",
+                        message: "Type parameter can't be a primitive",
                     });
                 }
                 return t.sourceString;
@@ -183,12 +185,10 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
 
     semantics.addOperation<AST.Field>("buildField(typeParams)", {
         Fields_FieldStatement(annon, typeExpr, ident, _arg3, jsonValue, _arg5) {
-            const localAnnons: TS.Map<AST.ScopedName, {} | null> = [];
-            annon.children.forEach((n: Node) => n.collectAnnotations(localAnnons));
             return AST.makeField({
                 name: ident.sourceString,
                 serializedName: ident.sourceString,
-                annotations: localAnnons,
+                annotations: annon.children.map(a => a.buildAnnotations()),
                 default: jsonValue.numChildren !== 0 ? { kind: "just", value: jsonValue.children[0].buildJsonValue() } : { kind: "nothing" },
                 typeExpr: typeExpr.buildTypeExpr(this.args.typeParams)
             });
@@ -284,8 +284,8 @@ export function makeAST(adl: MatchResult): {ast: AST.Module; errors: SemanticErr
         },
     });
 
-    const ast = semantics(adl).buildModule()
-    return {ast, errors}
+    const ast = semantics(adl).buildModule();
+    return { ast, errors };
 }
 
 const simplePrimitive = [

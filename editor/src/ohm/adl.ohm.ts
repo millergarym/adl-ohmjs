@@ -15,7 +15,7 @@ ADL {
     
     Annon =
         | "@" scopedName JsonValue?                                 -- local
-        | doccomment (doccomment)*                                  -- doc
+        | doccomment+                                  -- doc
     
     Top =
         | RemoteAnnon   -- annon
