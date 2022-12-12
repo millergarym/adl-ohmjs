@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as monaco from 'monaco-editor';
 import { makeAST, match } from '../ohm/adl';
+import { resolveExplicits } from '../ohm/adl_step2';
 
 // @ts-ignore
 self.MonacoEnvironment = {
@@ -40,6 +41,7 @@ export const Editor = () => {
 
 		model.onDidChangeContent((e: monaco.editor.IModelContentChangedEvent) => {
 			const m = match(model.getValue());
+
 			// console.log("onDidChangeContent", e, model.getValue(), m.failed());
 			if (m.failed()) {
 				console.log("syntax error - message : ", m.message);
@@ -80,7 +82,9 @@ export const Editor = () => {
 			}
 			if (m.succeeded()) {
 				monaco.editor.setModelMarkers(model, "", []);
-				const { ast, errors } = makeAST(m);
+				const { semantics, ast, errors, explicits } = makeAST(m);
+				resolveExplicits(m, semantics, explicits, errors)
+
 				monaco.editor.setModelMarkers(model, "", errors.map(e => {
 					// console.log("!!", e.source.getLineAndColumnMessage());
 					// console.log("!!!", e.source.collapsedRight().getLineAndColumnMessage());
