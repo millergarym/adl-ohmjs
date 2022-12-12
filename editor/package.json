@@ -1,0 +1,44 @@
+{
+	"name": "monaco-esm-webpack-typescript",
+	"scripts": {
+		"ohm": "ohm generateBundles -h",
+		"generate": "ohm generateBundles --withTypes 'src/ohm/*.ohm'",
+		"generate_esm": "ohm generateBundles --esm --withTypes 'src/ohm/*.ohm'",
+		"tsc": "tsc",
+		"test": "ava",
+	
+		"start": "node ../node_modules/webpack-dev-server/bin/webpack-dev-server.js",
+		"build": "NODE_ENV='production' node ../node_modules/webpack/bin/webpack.js --progress"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"ohm-js": "^16.4.0",
+		"base64-js": "^1.5.1",
+		"base64url": "^3.0.1",
+		"@types/base64-js": "^1.2.5",
+		"@ohm-js/cli": "^1.1.0",
+		"@types/node": "^16.9.1",
+		"ava": "^4.3.3",
+		"ts-node": "^10.2.0",
+		"typescript": "^4.9.3",
+		"@babel/core": "^7.17.0",
+		"@babel/preset-env": "^7.16.11",
+		"@babel/preset-react": "^7.16.7",
+		"@babel/preset-typescript": "^7.16.7",
+		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
+		"@types/react": "^17.0.39",
+		"@types/react-dom": "^17.0.11",
+		"babel-loader": "^8.2.3",
+		"react": "^17.0.2",
+		"react-dom": "^17.0.2",
+		"react-refresh": "^0.11.0"
+	},
+	"ava": {
+		"extensions": [
+			"ts"
+		],
+		"require": [
+			"ts-node/register"
+		]
+	}
+}

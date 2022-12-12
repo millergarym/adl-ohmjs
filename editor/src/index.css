@@ -1,0 +1,23 @@
+.EditorView {
+    display: flex;
+    flex-direction: row;
+}
+
+.Editor {
+	width: 400px;
+	height: 600px;
+	border: 1px solid #ccc;
+}
+
+.Output {
+	margin: 0px;
+	width: 400px;
+	height: 600px;
+	border: 1px solid #ccc;
+}
+
+.myLineDecoration {
+	background: red;
+	width: 5px !important;
+	margin-left: 3px;
+}
