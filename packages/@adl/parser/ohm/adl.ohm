@@ -12,7 +12,7 @@ ADL {
 
     Annon =
         | "@" scopedName JsonValue?                                 -- local
-        | doccomment+                                  -- doc
+        | doccomment+                                               -- doc
 
     Top =
         | RemoteAnnon   -- annon
@@ -44,6 +44,7 @@ ADL {
 
     JsonValue =
         | string                                                                        -- StringStatement
+        | multiLineStr                                                                  -- mls
         | "true"                                                                        -- true
         | "false"                                                                       -- false
         | "null"                                                                        -- null
@@ -62,11 +63,14 @@ ADL {
     struct = "struct" ~(letter | alnum)
     union = "union" ~(letter | alnum)
 
-    comment =  "//" ~"/" (~("\n") any)* "\n"
+    comment = "//" ~"/" (~"\n" any)* &("\n" | end)  -- singleLine
+    
     doccomment =  "///" (~"\n" any)* "\n"
     space += comment
 
     string = "\"" (~"\"" ("\\\"" | any))* "\""
+    multiLineStr = "```" (~("\n" space* "```") any)* "\n" space* "```"
+    
     number  (a number)
         = "-"? digit* "." digit+  -- fract
         | "-"? digit+             -- whole
