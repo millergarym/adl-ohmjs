@@ -1,18 +1,20 @@
 ADL {
     Module =
-         Annon* module scopedName "{" Imports* Top* "}" ";"? -- module
+         Annon* module scopedName "{" 
+         idc
+         Imports* Top* "}" ";"? -- module
 
     scopedName = (ident ".")* ident
     // scopedName = ident ("." ident)*
     scopedNameStar = ident ("." ident)* ".*"
 
     Imports =
-        | import scopedNameStar ";"         -- module
-        | import scopedName ";"             -- scopedName
+        | import idc scopedNameStar idc ";"         -- module
+        | import idc scopedName idc ";"             -- scopedName
 
     Annon =
-        | "@" scopedName JsonValue?                                 -- local
-        | doccomment+                                               -- doc
+        | #("@" scopedName) idc JsonValue?                                 -- local
+        | doccomment+                                  -- doc
 
     Top =
         | RemoteAnnon   -- annon
@@ -24,7 +26,7 @@ ADL {
         | annotation ident "::" ident scopedName JsonValue ";"                               -- FieldAnnotation
 
     Decl =
-        | Annon* struct     ident MVersion? TypeParam? "{" Fields* "}" ";"?                        -- Struct
+        | Annon* struct     ident MVersion? TypeParam? "{" Fields* idc "}" ";"?                        -- Struct
         | Annon* union      ident MVersion? TypeParam? "{" Fields* "}" ";"?                         -- Union
         | Annon* type       ident MVersion? TypeParam? "=" TypeExpr  ";"                              -- Type
         | Annon* newtype    ident MVersion? TypeParam? "=" TypeExpr ("=" JsonValue)? ";"           -- Newtype
@@ -44,7 +46,7 @@ ADL {
 
     JsonValue =
         | string                                                                        -- StringStatement
-        | multiLineStr                                                                  -- mls
+        | multiLineStr -- mls
         | "true"                                                                        -- true
         | "false"                                                                       -- false
         | "null"                                                                        -- null
@@ -65,8 +67,9 @@ ADL {
 
     comment = "//" ~"/" (~"\n" any)* &("\n" | end)  -- singleLine
     
+    idc = doccomment?
     doccomment =  "///" (~"\n" any)* "\n"
-    space += comment
+    space += comment 
 
     string = "\"" (~"\"" ("\\\"" | any))* "\""
     multiLineStr = "```" (~("\n" space* "```") any)* "\n" space* "```"
