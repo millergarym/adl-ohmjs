@@ -71,7 +71,7 @@ ADL {
     doccomment =  "///" (~"\n" any)* "\n"
     space += comment 
 
-    string = "\"" (~"\"" ("\\\"" | any))* "\""
+    string = "\"" (~("\""| "\n") ("\\\"" | any))* "\""
     multiLineStr = "```" (~("\n" space* "```") any)* "\n" space* "```"
     
     number  (a number)
